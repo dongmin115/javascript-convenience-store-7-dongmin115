@@ -24,6 +24,10 @@ class ProductManager {
         return this.products.find(product => product.name === name);
     }
 
+    getProductsByName(name) {
+        return this.products.filter(product => product.name === name);
+    }
+
     updateStock(promoProduct, regularProduct, promoQuantity, regularQuantity) {
         let success = true;
 

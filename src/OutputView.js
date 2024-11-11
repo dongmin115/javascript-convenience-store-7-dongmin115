@@ -1,4 +1,5 @@
 import { Console } from '@woowacourse/mission-utils';
+import ProductManager from "./ProductManager.js";
 
 const OutputView = {
     printWelcomeMessage() {
@@ -6,10 +7,23 @@ const OutputView = {
     },
     printProducts(products) {
         Console.print("현재 보유하고 있는 상품입니다.\n");
-        products.forEach(product => {
-            const stockStatus = product.quantity === 0 ? '재고 없음' : `${product.quantity}개`;
-            const promoStatus = product.promotion ? product.promotion : '';
-            Console.print(`- ${product.name} ${product.price.toLocaleString()}원 ${stockStatus} ${promoStatus}`);
+
+        const productNames = [...new Set(products.map(product => product.name))];
+
+        productNames.forEach(name => {
+            const groupedProducts = ProductManager.getProductsByName(name);
+
+            groupedProducts.forEach(product => {
+                const stockStatus = product.quantity === 0 ? '재고 없음' : `${product.quantity}개`;
+                const promoStatus = product.promotion ? product.promotion : '';
+                Console.print(`- ${product.name} ${product.price.toLocaleString()}원 ${stockStatus} ${promoStatus}`);
+            });
+
+            // 프로모션이 있는 상품만 있고, 같은 상품명이면서 프로모션이 없는 경우를 처리
+            const hasNoPromotionProduct = groupedProducts.every(product => product.promotion);
+            if (hasNoPromotionProduct) {
+                Console.print(`- ${name} ${groupedProducts[0].price.toLocaleString()}원 재고 없음`);
+            }
         });
     },
     printReceipt(items, total, discounts) {
@@ -42,3 +56,4 @@ const OutputView = {
 };
 
 export default OutputView;
+
